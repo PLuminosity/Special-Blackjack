@@ -1,13 +1,15 @@
 import java.util.Scanner;
 
 public class Player extends Participant implements Actionable {
+    private final String password;
     private int money;
     private int bet;
     private boolean doubleUsed = false;
 
-    public Player(String name, int initialMoney) {
+    public Player(String name, String password, int money) {
         super(name);
-        this.money = initialMoney;
+        this.password = password;
+        this.money = money;
     }
 
     public void placeBet(int amount) {
@@ -34,7 +36,19 @@ public class Player extends Participant implements Actionable {
         return money;
     }
 
-    public boolean hasDoubled() {
+    public String getPassword() {
+        return password;
+    }
+    public String serialize() {
+        return name + "," + password + "," + money;
+    }
+
+    public static Player deserialize(String line) {
+        String[] parts = line.split(",");
+        return new Player(parts[0], parts[1], Integer.parseInt(parts[2]));
+    }
+
+    public boolean isDoubleUsed() {
         return doubleUsed;
     }
 
