@@ -2,13 +2,17 @@ import java.io.*;
 import java.util.*;
 
 public class BlackjackGame {
+    static int currentBustLimit = 21;
+    private static int dealerHandAdjustment = 0;
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        File file;
         Player player = null;
         Dealer dealer = new Dealer();
         Deck deck = new Deck();
         UserManager userManager = new UserManager();
-        int p = 0, d = 0, bet;
+        int p, d, bet;
 
         System.out.println("Vítejte ve hře Blackjack!");
         while (player == null) {
@@ -40,7 +44,37 @@ public class BlackjackGame {
 
         }
 
+        if (player.getMoney() == 0) {
+            int amount;
+            String choice;
+            System.out.println("Nemáte žádné peníze.");
+            System.out.println("1. Dobití peněz\n2. Konec");
+            choice = scanner.nextLine();
+            switch (choice) {
+                case "1":
+                    do {
+                        System.out.println("Zadejte částku k dobití: ");
+                        amount = Integer.parseInt(scanner.nextLine());
+                        if (amount <= 0) {
+                            System.out.println("Částka musí být kladná.");
+                        }
+                    } while (amount <= 0);
+                        player.setMoney(player.getMoney() + amount);
+                        System.out.println("Úspěšně jste dobili " + amount + " Kč.");
+                    break;
+                case "2":
+                    System.out.println("Konec hry.");
+                    return;
+                default:
+                    System.out.println("Neplatná volba.");
+                    return;
+            }
+        }
+
         while (true) {
+            currentBustLimit = 21;
+            dealerHandAdjustment = 0;
+
             System.out.println("\n--- Nová hra ---");
             System.out.println("Zůstatek: " + player.getMoney() + " Kč");
             System.out.print("Zadej sázku (0 = konec): ");
@@ -59,24 +93,21 @@ public class BlackjackGame {
             dealer.resetHand();
             deck.shuffle();
 
-            player.getHand().addCard(deck.dealCard());
-            player.getHand().addCard(deck.dealCard());
-            dealer.getHand().addCard(deck.dealCard());
-            dealer.getHand().addCard(deck.dealCard());
+            dealInitialCards(player, dealer, deck);
 
-            System.out.println("Dealer ukazuje: " + dealer.getHand().getCards().getFirst());
-            player.performAction(deck);
+            System.out.println("Dealer ukazuje: " + dealer.getHand().getCards().getFirst() + " (value: " + dealer.getHand().getCards().getFirst().getValue() + ")");
+            player.performAction(deck, dealer);
 
-            if (player.getHand().getValue() <= 21) {
+            if (player.getHand().getValue() <= currentBustLimit) {
                 dealer.play(deck);
             }
 
             p = player.getHand().getValue();
-            d = dealer.getHand().getValue();
+            d = dealer.getHand().getValue() + dealerHandAdjustment;
 
-            if (p > 21) {
+            if (p > currentBustLimit) {
                 System.out.println("Prohrál jsi.");
-            } else if (d > 21 || p > d) {
+            } else if (d > currentBustLimit || p > d) {
                 System.out.println("Vyhrál jsi!");
                 player.win();
             } else if (p == d) {
@@ -85,20 +116,87 @@ public class BlackjackGame {
             } else {
                 System.out.println("Prohrál jsi.");
             }
-        }
-        File file = new File("blackjack_log.csv");
-        boolean notExists = !file.exists();
-        try (FileWriter fw = new FileWriter("blackjack_log.csv", true)) {
-            if (notExists) {
-                fw.write("date;player;dealer;bet\n");
+
+            file = new File("blackjack_log.csv");
+            boolean notExists = !file.exists();
+            try (FileWriter fw = new FileWriter("blackjack_log.csv", true)) {
+                if (notExists) {
+                    fw.write("date;player;dealer;bet\n");
+                }
+                fw.write(String.format(Locale.US, "%s;%d;%d;%d\n",
+                        new Date(), p, d, player.getBet()));
+            } catch (IOException e) {
+                System.out.println("Chyba při zápisu do souboru: " + e.getMessage());
             }
-            fw.write(String.format(Locale.US, "%s;%d;%d;%d\n",
-                    new Date(), p, d, player.getBet()));
-        } catch (IOException e) {
-            System.out.println("Chyba při zápisu do souboru: " + e.getMessage());
         }
+
 
         userManager.updatePlayer(player);
         System.out.println("Díky za hru!");
+    }
+
+    static void dealInitialCards(Player player, Dealer dealer, Deck deck) {
+        int i;
+        Card dealerCard;
+        Card card;
+
+        for (i = 0; i< 2; i++) {
+            card = deck.dealCard();
+            player.getHand().addCard(card);
+            if (card.isWild()) {
+                System.out.println("You drew a wild card! Drawing replacement...");
+                handleWildCard(player, card, deck);
+            }
+        }
+
+        for (i = 0; i < 2; i++) {
+            do {
+                dealerCard = deck.dealCard();
+                dealer.getHand().addCard(dealerCard);
+                if (dealerCard.isWild()) {
+                    System.out.println("Dealer drew a wild card! Removing it and drawing replacement...");
+                    dealer.getHand().getCards().remove(dealerCard);
+                }
+            }while(dealerCard.isWild());
+        }
+    }
+
+    static void handleWildCard(Player player, Card wildCard, Deck deck) {
+        player.getHand().getCards().remove(wildCard);
+
+        if (!player.getWildCards().contains(wildCard)) {
+            player.getWildCards().add(wildCard);
+        }
+
+        Card newCard;
+        do {
+            newCard = deck.dealCard();
+            if (newCard.isWild()) {
+                System.out.println("Another wild card! Drawing replacement...");
+                player.getWildCards().add(newCard);
+            }
+        } while (newCard.isWild());
+
+        player.getHand().addCard(newCard);
+    }
+
+    static void handleWildEffect(Card card, Player player, Dealer dealer) {
+        WildCard effect = card.getWildEffect();
+        System.out.println("Wild card activated: " + card);
+
+        if (effect instanceof RaiseLimitCard) {
+            effect.activate(player, dealer);
+            System.out.println("Current bust limit raised to " + currentBustLimit);
+        }
+        else if (effect instanceof ResetHandCard) {
+            effect.activate(player, dealer);
+            System.out.println("Your hand has been reset!");
+        }
+        else if (effect instanceof AddToDealerCard) {
+            effect.activate(player, dealer);
+            dealerHandAdjustment += ((AddToDealerCard) effect).getValueToAdd();
+            System.out.println("Dealer's hand will have " +
+                ((AddToDealerCard) effect).getValueToAdd() + " added at evaluation");
+        }
     }
 }

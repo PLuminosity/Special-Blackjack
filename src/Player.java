@@ -1,15 +1,22 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Player extends Participant implements Actionable {
+    // Tohle by asi melo byt zahashovany (heslo
     private final String password;
     private int money;
     private int bet;
-    private boolean doubleUsed = false;
+    private final List<Card> wildCards = new ArrayList<>();
 
     public Player(String name, String password, int money) {
         super(name);
         this.password = password;
         this.money = money;
+    }
+
+    public List<Card> getWildCards() {
+        return wildCards;
     }
 
     public void placeBet(int amount) {
@@ -35,6 +42,9 @@ public class Player extends Participant implements Actionable {
     public int getMoney() {
         return money;
     }
+    public void setMoney(int money) {
+        this.money = money;
+    }
 
     public String getPassword() {
         return password;
@@ -48,22 +58,38 @@ public class Player extends Participant implements Actionable {
         return new Player(parts[0], parts[1], Integer.parseInt(parts[2]));
     }
 
-    public boolean isDoubleUsed() {
-        return doubleUsed;
-    }
-
     @Override
-    public void performAction(Deck deck) {
+    public void performAction(Deck deck, Dealer dealer) {
         Scanner scanner = new Scanner(System.in);
         while (true) {
             System.out.println("\n" + name + "'s hand: " + hand);
+
+            if (!wildCards.isEmpty()) {
+                for (Card wild : wildCards) {
+                    System.out.println("  " + wild);
+                }
+                System.out.println("Choose a wild card to activate (1-" + wildCards.size() +
+                                 ") or 0 to skip");
+                for (int i = 0; i < wildCards.size(); i++) {
+                    System.out.println((i+1) + ") " + wildCards.get(i));
+                }
+            }
+
             System.out.print("Choose action: hit / stand / double > ");
             String action = scanner.nextLine();
 
             switch (action.toLowerCase()) {
                 case "hit":
-                    hand.addCard(deck.dealCard());
-                    if (hand.getValue() > 21) {
+                    Card drawnCard = deck.dealCard();
+                    if (drawnCard.isWild()) {
+                        System.out.println("You drew a wild card! It's been set aside.");
+                        wildCards.add(drawnCard);
+                        drawnCard = deck.dealCard();
+                        System.out.println("Drew replacement card: " + drawnCard);
+                    }
+                    hand.addCard(drawnCard);
+
+                    if (hand.getValue() > BlackjackGame.currentBustLimit) {
                         System.out.println("Bust! Hand value: " + hand.getValue());
                         return;
                     }
@@ -74,7 +100,6 @@ public class Player extends Participant implements Actionable {
                     if (hand.getCards().size() == 2 && money >= bet) {
                         money -= bet;
                         bet *= 2;
-                        doubleUsed = true;
                         hand.addCard(deck.dealCard());
                         return;
                     } else {
@@ -82,6 +107,16 @@ public class Player extends Participant implements Actionable {
                     }
                     break;
                 default:
+                    try {
+                        int wildChoice = Integer.parseInt(action);
+                        if (wildChoice > 0 && wildChoice <= wildCards.size()) {
+                            Card selectedWild = wildCards.get(wildChoice - 1);
+                            BlackjackGame.handleWildEffect(selectedWild, this, dealer);
+                            wildCards.remove(selectedWild);
+                            continue;
+                        }
+                    } catch (NumberFormatException _) {
+                    }
                     System.out.println("Neplatná volba.");
             }
         }

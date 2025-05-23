@@ -1,3 +1,3 @@
 public interface Actionable {
-    void performAction(Deck deck);
+    void performAction(Deck deck, Dealer dealer);
 }
