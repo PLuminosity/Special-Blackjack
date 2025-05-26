@@ -2,7 +2,7 @@ public class ResetHandCard implements WildCard{
 
     @Override
     public String getDescription() {
-        return "Obnoví ruku hráče.";
+        return "Obnovení ruky hráče.";
     }
 
     @Override

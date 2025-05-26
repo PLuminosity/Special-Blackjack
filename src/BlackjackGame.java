@@ -121,7 +121,7 @@ public class BlackjackGame {
             boolean notExists = !file.exists();
             try (FileWriter fw = new FileWriter("blackjack_log.csv", true)) {
                 if (notExists) {
-                    fw.write("datum;player;dealer;sázka\n");
+                    fw.write("datum;player;dealer;sazka\n");
                 }
                 fw.write(String.format(Locale.US, "%s;%d;%d;%d\n",
                         new Date(), p, d, player.getBet()));

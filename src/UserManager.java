@@ -21,7 +21,7 @@ public class UserManager {
                 players.put(player.getName(), player);
             }
         } catch (IOException e) {
-            System.out.println("Error při načítnání hráčů: " + e.getMessage());
+            System.out.println("Vyskytla se chyba při načítnání hráčů: " + e.getMessage());
         }
     }
 
@@ -31,7 +31,7 @@ public class UserManager {
                 fw.write(player.serialize() + "\n");
             }
         } catch (IOException e) {
-            System.out.println("Error při ukládání hráčů: " + e.getMessage());
+            System.out.println("Vyskytla se chyba při ukládání hráču: " + e.getMessage());
         }
     }
 

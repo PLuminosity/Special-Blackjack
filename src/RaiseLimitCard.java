@@ -3,7 +3,7 @@ public class RaiseLimitCard implements WildCard{
 
     @Override
     public String getDescription() {
-        return "Zvýší limit z 21 na 24 pro současnou hru.";
+        return "Zvýší limit současné hry z 21 na 24.";
     }
 
     @Override

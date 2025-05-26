@@ -68,7 +68,7 @@ public class Player extends Participant implements Actionable {
                 for (Card wild : wildCards) {
                     System.out.println("  " + wild);
                 }
-                System.out.println("Vyberte si divokou kartu k aktivaci (1-" + wildCards.size() +
+                System.out.println("Vyberte si divokou kartu k použití (1-" + wildCards.size() +
                                  ") nebo 0 k přeskočení");
                 for (int i = 0; i < wildCards.size(); i++) {
                     System.out.println((i+1) + ") " + wildCards.get(i));
