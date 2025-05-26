@@ -62,35 +62,35 @@ public class Player extends Participant implements Actionable {
     public void performAction(Deck deck, Dealer dealer) {
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            System.out.println("\n" + name + "'s hand: " + hand);
+            System.out.println("\n" + name + "ova ruka: " + hand);
 
             if (!wildCards.isEmpty()) {
                 for (Card wild : wildCards) {
                     System.out.println("  " + wild);
                 }
-                System.out.println("Choose a wild card to activate (1-" + wildCards.size() +
-                                 ") or 0 to skip");
+                System.out.println("Vyberte si divokou kartu k aktivaci (1-" + wildCards.size() +
+                                 ") nebo 0 k přeskočení");
                 for (int i = 0; i < wildCards.size(); i++) {
                     System.out.println((i+1) + ") " + wildCards.get(i));
                 }
             }
 
-            System.out.print("Choose action: hit / stand / double > ");
+            System.out.print("Vyberte akci: hit / stand / double > ");
             String action = scanner.nextLine();
 
             switch (action.toLowerCase()) {
                 case "hit":
                     Card drawnCard = deck.dealCard();
                     if (drawnCard.isWild()) {
-                        System.out.println("You drew a wild card! It's been set aside.");
+                        System.out.println("Vytáhl jste divokou kartu! Odkládá se stranou.");
                         wildCards.add(drawnCard);
                         drawnCard = deck.dealCard();
-                        System.out.println("Drew replacement card: " + drawnCard);
+                        System.out.println("Vytažena náhradní karta: " + drawnCard);
                     }
                     hand.addCard(drawnCard);
 
                     if (hand.getValue() > BlackjackGame.currentBustLimit) {
-                        System.out.println("Bust! Hand value: " + hand.getValue());
+                        System.out.println("Bust! Hodnota ruky: " + hand.getValue());
                         return;
                     }
                     break;

@@ -5,7 +5,7 @@ public class AddToDealerCard implements WildCard {
 
     @Override
     public String getDescription() {
-        return "Adds a random value from 2 to 5 to the dealer's hand";
+        return "Přidá dealerovy náhodnou hodnotu od 2 do 5.";
     }
 
     @Override

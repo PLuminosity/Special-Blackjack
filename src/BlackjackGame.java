@@ -95,7 +95,7 @@ public class BlackjackGame {
 
             dealInitialCards(player, dealer, deck);
 
-            System.out.println("Dealer ukazuje: " + dealer.getHand().getCards().getFirst() + " (value: " + dealer.getHand().getCards().getFirst().getValue() + ")");
+            System.out.println("Dealer ukazuje: " + dealer.getHand().getCards().getFirst() + " (hodnota: " + dealer.getHand().getCards().getFirst().getValue() + ")");
             player.performAction(deck, dealer);
 
             if (player.getHand().getValue() <= currentBustLimit) {
@@ -121,7 +121,7 @@ public class BlackjackGame {
             boolean notExists = !file.exists();
             try (FileWriter fw = new FileWriter("blackjack_log.csv", true)) {
                 if (notExists) {
-                    fw.write("date;player;dealer;bet\n");
+                    fw.write("datum;player;dealer;sázka\n");
                 }
                 fw.write(String.format(Locale.US, "%s;%d;%d;%d\n",
                         new Date(), p, d, player.getBet()));
@@ -144,7 +144,7 @@ public class BlackjackGame {
             card = deck.dealCard();
             player.getHand().addCard(card);
             if (card.isWild()) {
-                System.out.println("You drew a wild card! Drawing replacement...");
+                System.out.println("Vytáhl jsi divokou kartu! Rozdává se náhradní karta...");
                 handleWildCard(player, card, deck);
             }
         }
@@ -154,7 +154,7 @@ public class BlackjackGame {
                 dealerCard = deck.dealCard();
                 dealer.getHand().addCard(dealerCard);
                 if (dealerCard.isWild()) {
-                    System.out.println("Dealer drew a wild card! Removing it and drawing replacement...");
+                    System.out.println("Dealer vytáhl divokou kartu! Odebírá se a rozdává se náhradní karta...");
                     dealer.getHand().getCards().remove(dealerCard);
                 }
             }while(dealerCard.isWild());
@@ -172,7 +172,7 @@ public class BlackjackGame {
         do {
             newCard = deck.dealCard();
             if (newCard.isWild()) {
-                System.out.println("Another wild card! Drawing replacement...");
+                System.out.println("Další divoká karta! Rozdává se náhradní karta...");
                 player.getWildCards().add(newCard);
             }
         } while (newCard.isWild());
@@ -182,21 +182,21 @@ public class BlackjackGame {
 
     static void handleWildEffect(Card card, Player player, Dealer dealer) {
         WildCard effect = card.getWildEffect();
-        System.out.println("Wild card activated: " + card);
+        System.out.println("Divoká karta aktivována: " + card);
 
         if (effect instanceof RaiseLimitCard) {
             effect.activate(player, dealer);
-            System.out.println("Current bust limit raised to " + currentBustLimit);
+            System.out.println("Současný limit zvýšen na " + currentBustLimit);
         }
         else if (effect instanceof ResetHandCard) {
             effect.activate(player, dealer);
-            System.out.println("Your hand has been reset!");
+            System.out.println("Vaše ruka byla obnovena!");
         }
         else if (effect instanceof AddToDealerCard) {
             effect.activate(player, dealer);
             dealerHandAdjustment += ((AddToDealerCard) effect).getValueToAdd();
-            System.out.println("Dealer's hand will have " +
-                ((AddToDealerCard) effect).getValueToAdd() + " added at evaluation");
+            System.out.println("Dealer bude mít při evaluaci příčtenou hodnotu " +
+                ((AddToDealerCard) effect).getValueToAdd());
         }
     }
 }

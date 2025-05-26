@@ -41,7 +41,7 @@ public class Card {
 
     public String toString() {
         if (isWild()) {
-            return "[WILD] " + wildEffect.getDescription();
+            return "[Divoká karta] " + wildEffect.getDescription();
         }
         return rank + " of " + suit;
     }

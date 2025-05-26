@@ -21,7 +21,7 @@ public class UserManager {
                 players.put(player.getName(), player);
             }
         } catch (IOException e) {
-            System.out.println("Error loading players: " + e.getMessage());
+            System.out.println("Error při načítnání hráčů: " + e.getMessage());
         }
     }
 
@@ -31,7 +31,7 @@ public class UserManager {
                 fw.write(player.serialize() + "\n");
             }
         } catch (IOException e) {
-            System.out.println("Error saving players: " + e.getMessage());
+            System.out.println("Error při ukládání hráčů: " + e.getMessage());
         }
     }
 
@@ -42,7 +42,7 @@ public class UserManager {
 
     public boolean registerPlayer(String name, String password) {
         if (players.containsKey(name)) {
-            System.out.println("Player already exists.");
+            System.out.println("Hráč už existuje.");
             return false;
         }
         Player newPlayer = new Player(name, password, 1000);
@@ -56,7 +56,7 @@ public class UserManager {
         if (player != null && player.getPassword().equals(password)) {
             return player;
         }
-        System.out.println("Invalid username or password.");
+        System.out.println("Neplatné uživatelské jméno nebo heslo.");
         return null;
     }
 }

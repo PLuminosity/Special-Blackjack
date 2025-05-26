@@ -3,7 +3,7 @@ public class RaiseLimitCard implements WildCard{
 
     @Override
     public String getDescription() {
-        return "Raise bust limit to 24 for current hand";
+        return "Zvýší limit z 21 na 24 pro současnou hru.";
     }
 
     @Override
