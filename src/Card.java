@@ -39,6 +39,7 @@ public class Card {
         return rank.getValue();
     }
 
+    @Override
     public String toString() {
         if (isWild()) {
             return "[Divoká] " + wildEffect.getDescription();

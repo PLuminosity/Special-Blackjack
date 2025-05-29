@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class Player extends Participant implements Actionable {
+public class Player extends Participant {
     // Tohle by asi melo byt zahashovany (heslo
     private final String password;
     private int money;
@@ -58,16 +58,12 @@ public class Player extends Participant implements Actionable {
         return new Player(parts[0], parts[1], Integer.parseInt(parts[2]));
     }
 
-    @Override
     public void performAction(Deck deck, Dealer dealer) {
         Scanner scanner = new Scanner(System.in);
         while (true) {
             System.out.println("\n" + name + "ova ruka: " + hand);
 
             if (!wildCards.isEmpty()) {
-                for (Card wild : wildCards) {
-                    System.out.println("  " + wild);
-                }
                 System.out.println("Vyberte si divokou kartu k použití (1-" + wildCards.size() +
                                  ") nebo 0 k přeskočení");
                 for (int i = 0; i < wildCards.size(); i++) {
