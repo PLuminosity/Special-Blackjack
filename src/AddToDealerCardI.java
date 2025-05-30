@@ -1,6 +1,6 @@
 import java.util.Random;
 
-public class AddToDealerCard implements WildCard {
+public class AddToDealerCardI implements IWildCard {
     private int valueToAdd;
 
     @Override

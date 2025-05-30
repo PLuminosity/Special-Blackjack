@@ -181,22 +181,22 @@ public class BlackjackGame {
     }
 
     static void handleWildEffect(Card card, Player player, Dealer dealer) {
-        WildCard effect = card.getWildEffect();
+        IWildCard effect = card.getWildEffect();
         System.out.println("Divoká karta aktivována: " + card);
 
-        if (effect instanceof RaiseLimitCard) {
+        if (effect instanceof RaiseLimitCardI) {
             effect.activate(player, dealer);
             System.out.println("Současný limit zvýšen na " + currentBustLimit);
         }
-        else if (effect instanceof ResetHandCard) {
+        else if (effect instanceof ResetHandCardI) {
             effect.activate(player, dealer);
             System.out.println("Vaše ruka byla obnovena!");
         }
-        else if (effect instanceof AddToDealerCard) {
+        else if (effect instanceof AddToDealerCardI) {
             effect.activate(player, dealer);
-            dealerHandAdjustment += ((AddToDealerCard) effect).getValueToAdd();
+            dealerHandAdjustment += ((AddToDealerCardI) effect).getValueToAdd();
             System.out.println("Dealer bude mít při evaluaci příčtenou hodnotu " +
-                ((AddToDealerCard) effect).getValueToAdd());
+                ((AddToDealerCardI) effect).getValueToAdd());
         }
     }
 }

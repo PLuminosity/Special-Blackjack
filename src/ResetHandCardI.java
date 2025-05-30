@@ -1,4 +1,4 @@
-public class ResetHandCard implements WildCard{
+public class ResetHandCardI implements IWildCard {
 
     @Override
     public String getDescription() {

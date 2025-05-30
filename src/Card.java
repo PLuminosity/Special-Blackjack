@@ -12,7 +12,7 @@ public class Card {
 
     private final Suit suit;
     private final Rank rank;
-    private WildCard wildEffect;
+    private IWildCard wildEffect;
 
     public Card(Suit suit, Rank rank) {
         this.suit = suit;
@@ -21,13 +21,13 @@ public class Card {
         if (suit == Suit.WILDCARD) {
             switch(rank) {
                 case WILD_RAISE_24:
-                    wildEffect = new RaiseLimitCard();
+                    wildEffect = new RaiseLimitCardI();
                     break;
                 case WILD_RESET_HAND:
-                    wildEffect = new ResetHandCard();
+                    wildEffect = new ResetHandCardI();
                     break;
                 case WILD_ADD_DEALER:
-                    wildEffect = new AddToDealerCard();
+                    wildEffect = new AddToDealerCardI();
                     break;
                 default:
                     wildEffect = null;
@@ -49,7 +49,7 @@ public class Card {
     public boolean isWild() {
         return wildEffect != null;
     }
-    public WildCard getWildEffect() {
+    public IWildCard getWildEffect() {
         return wildEffect;
     }
 }

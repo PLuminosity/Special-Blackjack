@@ -1,4 +1,4 @@
-public class RaiseLimitCard implements WildCard{
+public class RaiseLimitCardI implements IWildCard {
 
 
     @Override
